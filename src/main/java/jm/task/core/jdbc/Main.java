@@ -4,6 +4,8 @@ package jm.task.core.jdbc;
 import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.service.UserService;
+import jm.task.core.jdbc.service.UserServiceImpl;
 
 import java.util.Iterator;
 import java.util.List;
@@ -12,14 +14,15 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        UserDao createTable = new UserDaoJDBCImpl();
-        createTable.createUsersTable();
-        createTable.saveUser("Али", "Ельмурзаев", (byte) 31);
-        createTable.saveUser("Генадий", "Котов", (byte) 56);
-        createTable.saveUser("Иван", "Иванов", (byte) 67);
+        UserService userService = new UserServiceImpl();
+
+        userService.createUsersTable();
+        userService.saveUser("Али", "Ельмурзаев", (byte) 31);
+        userService.saveUser("Генадий", "Котов", (byte) 56);
+        userService.saveUser("Иван", "Иванов", (byte) 67);
 
 
-        List<User> userList = createTable.getAllUsers();
+        List<User> userList = userService.getAllUsers();
         Iterator<User> iterator = userList.listIterator();
         while (iterator.hasNext()) {
             User user = iterator.next();
@@ -30,11 +33,11 @@ public class Main {
                     user.getAge());
         }
 
-        createTable.cleanUsersTable();
+        userService.cleanUsersTable();
 
-        createTable.removeUserById(1);
+        userService.removeUserById(1);
 
-        createTable.dropUsersTable();
+        userService.dropUsersTable();
 
     }
 }
