@@ -45,9 +45,11 @@ public class UserDaoJDBCImpl implements UserDao {
     public void saveUser(String name, String lastName, byte age) {
         try (Connection connection = Util.getMySQLConnection();
              Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
             String sql = "INSERT INTO user (name, lastName, age) values (" + "'" +
-                   name + "'" + "," + "'" + lastName + "'" + "," + age + ");";
+                    name + "'" + "," + "'" + lastName + "'" + "," + age + ");";
             statement.executeUpdate(sql);
+            connection.commit();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
@@ -58,8 +60,10 @@ public class UserDaoJDBCImpl implements UserDao {
     public void removeUserById(long id) {
         try (Connection connection = Util.getMySQLConnection();
              Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
             String sql = "DELETE FROM user WHERE id = " + id;
             statement.executeUpdate(sql);
+            connection.commit();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
@@ -94,8 +98,10 @@ public class UserDaoJDBCImpl implements UserDao {
     public void cleanUsersTable() {
         try (Connection connection = Util.getMySQLConnection();
              Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
             String sql = "DELETE FROM user";
             statement.executeUpdate(sql);
+            connection.commit();
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (SQLException e) {
