@@ -1,5 +1,7 @@
 package jm.task.core.jdbc.dao;
 
+import com.mysql.cj.jdbc.ConnectionGroupManager;
+import com.mysql.cj.jdbc.ConnectionImpl;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
@@ -18,8 +20,6 @@ public class UserDaoJDBCImpl implements UserDao {
             String sql = "CREATE TABLE user (id BIGINT UNSIGNED NOT NULL " +
                     "AUTO_INCREMENT PRIMARY KEY, name TEXT, lastName TEXT, age TINYINT)";
             statement.executeUpdate(sql);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (SQLSyntaxErrorException ignore) {
 
         } catch (SQLException e) {
@@ -33,8 +33,6 @@ public class UserDaoJDBCImpl implements UserDao {
              Statement statement = connection.createStatement();) {
             String sql = "DROP TABLE user";
             statement.executeUpdate(sql);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         } catch (SQLSyntaxErrorException ignore) {
 
         } catch (SQLException e) {
@@ -42,32 +40,28 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-    public void saveUser(String name, String lastName, byte age) {
-        try (Connection connection = Util.getMySQLConnection();
-             Statement statement = connection.createStatement()) {
+    public void saveUser(String name, String lastName, byte age) throws SQLException {
+        Connection connection = Util.getMySQLConnection();
+        try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             String sql = "INSERT INTO user (name, lastName, age) values (" + "'" +
                     name + "'" + "," + "'" + lastName + "'" + "," + age + ");";
             statement.executeUpdate(sql);
             connection.commit();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            connection.rollback();
         }
     }
 
-    public void removeUserById(long id) {
-        try (Connection connection = Util.getMySQLConnection();
-             Statement statement = connection.createStatement()) {
+    public void removeUserById(long id) throws SQLException {
+        Connection connection = Util.getMySQLConnection();
+        try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             String sql = "DELETE FROM user WHERE id = " + id;
             statement.executeUpdate(sql);
             connection.commit();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            connection.rollback();
         }
     }
 
@@ -87,25 +81,21 @@ public class UserDaoJDBCImpl implements UserDao {
                 usersList.add(user);
             }
 
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return usersList;
     }
 
-    public void cleanUsersTable() {
-        try (Connection connection = Util.getMySQLConnection();
-             Statement statement = connection.createStatement()) {
+    public void cleanUsersTable() throws SQLException {
+        Connection connection = Util.getMySQLConnection();
+        try (Statement statement = connection.createStatement()) {
             connection.setAutoCommit(false);
             String sql = "DELETE FROM user";
             statement.executeUpdate(sql);
             connection.commit();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            connection.rollback();
         }
 
     }
